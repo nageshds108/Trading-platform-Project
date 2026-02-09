@@ -16,7 +16,7 @@ const Signup = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/signup",
+        "https://trading-platform-project-backend.onrender.com/signup",
         { username, email, password },
         { withCredentials: true }
       );

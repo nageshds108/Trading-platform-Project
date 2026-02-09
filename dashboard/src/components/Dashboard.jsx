@@ -18,7 +18,7 @@ const Dashboard = () => {
   useEffect(() => {
     const check = async () => {
       try {
-        const resp = await axios.get("http://localhost:3000/me", { withCredentials: true });
+        const resp = await axios.get("https://trading-platform-project-backend.onrender.com/me", { withCredentials: true });
         if (!resp.data.user) {
           navigate("/login");
         }

@@ -20,7 +20,7 @@ const Menu = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const resp = await axios.get("http://localhost:3000/me", { withCredentials: true });
+        const resp = await axios.get("https://trading-platform-project-backend.onrender.com/me", { withCredentials: true });
         setUser(resp.data.user);
       } catch (err) {
         setUser(null);
@@ -41,7 +41,7 @@ const Menu = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:3000/logout", {}, { withCredentials: true });
+      await axios.post("https://trading-platform-project-backend.onrender.com/logout", {}, { withCredentials: true });
       setUser(null);
       navigate("/login");
     } catch (err) {

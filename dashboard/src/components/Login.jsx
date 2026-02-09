@@ -15,7 +15,7 @@ const Login = () => {
 
     try {
       await axios.post(
-        "http://localhost:3000/login",
+        "https://trading-platform-project-backend.onrender.com/login",
         { identifier, password },
         { withCredentials: true }
       );

@@ -25,7 +25,7 @@ const BuyActionWindow = ({ uid }) => {
 
     try {
       await axios.post(
-        "http://localhost:3000/Buy",
+        "https://trading-platform-project-backend.onrender.com/Buy",
         {
           name: uid,
           qty,

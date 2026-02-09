@@ -12,7 +12,7 @@ const SellActionWindow = ({ uid }) => {
   const handleSellClick = async () => {
     try {
       const resp = await axios.post(
-        "http://localhost:3000/Order",
+        "https://trading-platform-project-backend.onrender.com/Order",
         {
           name: uid,
           qty: Number(stockQuantity),
