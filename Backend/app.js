@@ -21,7 +21,17 @@ const port = process.env.Port || 3000;
 app.use(
   cors({
     origin: function (origin, callback) {
-      callback(null, true);
+      const allowedOrigins = [
+        "http://localhost:5174",
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://trading-platform-project-dashboard.onrender.com",
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
     },
     credentials: true,
   })
@@ -63,7 +73,8 @@ app.use(
         maxAge: 1000 * 60 * 60 * 24,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production' ? true : false,
-        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'lax',
+        domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
       },
     });
   })()
