@@ -28,7 +28,7 @@ const Dashboard = () => {
       }
     };
     check();
-  }, [navigate]);
+  }, []);
   return (
     <div className="dashboard-container">
       <GeneralContextProvider>

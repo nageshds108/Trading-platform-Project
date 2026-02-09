@@ -18,11 +18,9 @@ app.use(express.urlencoded({ extended: true }));
 const URL = process.env.MongoURL || "mongodb://127.0.0.1:27017/trading";
 const port = process.env.Port || 3000;
 
-// CORS: echo request origin so credentials work across multiple frontends during dev
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like curl, mobile apps)
       callback(null, true);
     },
     credentials: true,
@@ -39,16 +37,13 @@ let main= async()=>{
 }
 main()
 
-// session store using connect-mongo
 app.use(
   (function () {
-    // create store in a way compatible with multiple connect-mongo versions
     let storeInstance;
     try {
       if (MongoStore && typeof MongoStore.create === "function") {
         storeInstance = MongoStore.create({ mongoUrl: URL });
       } else if (typeof MongoStore === "function") {
-        // older connect-mongo exports a function that accepts session
         storeInstance = MongoStore(session)({ url: URL });
       } else if (MongoStore && MongoStore.default && typeof MongoStore.default.create === "function") {
         storeInstance = MongoStore.default.create({ mongoUrl: URL });
@@ -74,7 +69,6 @@ app.use(
   })()
 );
 
-// auth middleware
 function requireAuth(req, res, next) {
   if (!req.session || !req.session.userId) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -82,7 +76,6 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// Auth routes
 app.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
