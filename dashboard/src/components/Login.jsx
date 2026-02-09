@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import API_BASE_URL from "../config";
+import { useNavigate } from "react-router-dom";
 import "./Auth.css";
+
+const API_BASE_URL = "https://YOUR-BACKEND.onrender.com";
 
 const Login = () => {
   const [identifier, setIdentifier] = useState("");
@@ -10,62 +11,59 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!identifier || !password) return setError("All fields required");
+
+    if (!identifier || !password) {
+      setError("All fields are required");
+      return;
+    }
 
     setLoading(true);
     try {
-      const resp = await axios.post(
+      await axios.post(
         `${API_BASE_URL}/login`,
         { identifier, password },
         { withCredentials: true }
       );
-      if (resp.status === 200) {
-        window.location.href = "/";
-      } else {
-        setError(resp.data?.message || `Login failed (${resp.status})`);
-      }
+
+      // ✅ DO NOT use window.location.href
+      navigate("/", { replace: true });
     } catch (err) {
-      const serverMsg = err.response?.data || err.response?.statusText;
-      const msg = serverMsg?.message || serverMsg || err.message;
-      setError(msg);
+      setError(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
-          <img src="/logo.png" alt="logo"  style={{height:"2rem"}}  className="me-5"/>
-          <h1>Trading Platform</h1>
-        </div>
-        <div className="auth-title">Login to your account</div>
+    <div className="auth-container">
+      <form onSubmit={handleSubmit} className="auth-form">
+        <h2>Login</h2>
 
-        {error && <div className="auth-error">{error}</div>}
+        {error && <p className="error">{error}</p>}
 
-        <form onSubmit={(e) => e.preventDefault()}>
-          <label>Username or Email</label>
-          <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
+        <input
+          type="text"
+          placeholder="Username or Email"
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
+        />
 
-          <label>Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-          <div className="auth-actions">
-            <button className="btn-primary" type="submit" onClick={handleSubmit} disabled={loading} style={{backgroundColor:'#ff5722'}}>
-              {loading ? "Submitting..." : "Login"}
-            </button>
-            <Link to="/signup" >Sign up</Link>
-          </div>
-        </form>
-
-        <div className="auth-footer">
-          By continuing, you agree to our <a href="#">Terms</a>.
-        </div>
-      </div>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
     </div>
   );
 };
