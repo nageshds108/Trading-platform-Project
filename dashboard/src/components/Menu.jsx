@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
@@ -20,7 +21,7 @@ const Menu = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const resp = await axios.get("https://trading-platform-project-backend.onrender.com/me", { withCredentials: true });
+        const resp = await axios.get(`${API_BASE_URL}/me`, { withCredentials: true });
         setUser(resp.data.user);
       } catch (err) {
         setUser(null);
@@ -41,7 +42,7 @@ const Menu = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("https://trading-platform-project-backend.onrender.com/logout", {}, { withCredentials: true });
+      await axios.post(`${API_BASE_URL}/logout`, {}, { withCredentials: true });
       setUser(null);
       navigate("/login");
     } catch (err) {

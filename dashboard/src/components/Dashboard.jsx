@@ -1,6 +1,7 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 import Apps from "./Apps";
 import Funds from "./Funds";
@@ -18,7 +19,7 @@ const Dashboard = () => {
   useEffect(() => {
     const check = async () => {
       try {
-        const resp = await axios.get("https://trading-platform-project-backend.onrender.com/me", { withCredentials: true });
+        const resp = await axios.get(`${API_BASE_URL}/me`, { withCredentials: true });
         if (!resp.data.user) {
           navigate("/login");
         }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import API_BASE_URL from "../config";
 import "./Auth.css";
 
 const Signup = () => {
@@ -16,7 +17,7 @@ const Signup = () => {
 
     try {
       await axios.post(
-        "https://trading-platform-project-backend.onrender.com/signup",
+        `${API_BASE_URL}/signup`,
         { username, email, password },
         { withCredentials: true }
       );

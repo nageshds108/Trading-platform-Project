@@ -1,5 +1,6 @@
 import {useEffect,useState} from "react";
 import axios from "axios";
+import API_BASE_URL from "../config";
 
 
 const Positions = () => {
@@ -8,7 +9,7 @@ const [Allpositions,SetPositions]=useState([])
 
 
 useEffect(()=>{
-  axios.get("https://trading-platform-project-backend.onrender.com/positions").then((res)=>{
+  axios.get(`${API_BASE_URL}/positions`).then((res)=>{
     SetPositions(res.data)
 
   })

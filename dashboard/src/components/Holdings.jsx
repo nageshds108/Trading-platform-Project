@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios, { all } from "axios";
+import axios from "axios";
+import API_BASE_URL from "../config";
 import { VerticalGraph } from "./VerticalGraph";
 
 
@@ -7,7 +8,7 @@ const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);
 
   useEffect(() => {
-    axios.get("https://trading-platform-project-backend.onrender.com/holdings").then((res) => {
+    axios.get(`${API_BASE_URL}/holdings`).then((res) => {
       setAllHoldings(res.data);
     });
   }, []);

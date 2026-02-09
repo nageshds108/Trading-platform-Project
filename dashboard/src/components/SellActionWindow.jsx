@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import GeneralContext from "./GeneralContext";
+import API_BASE_URL from "../config";
 import "./BuyActionWindow.css";
 
 const SellActionWindow = ({ uid }) => {
@@ -12,7 +13,7 @@ const SellActionWindow = ({ uid }) => {
   const handleSellClick = async () => {
     try {
       const resp = await axios.post(
-        "https://trading-platform-project-backend.onrender.com/Order",
+        `${API_BASE_URL}/Order`,
         {
           name: uid,
           qty: Number(stockQuantity),
