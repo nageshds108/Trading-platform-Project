@@ -64,7 +64,12 @@ app.use(
       resave: false,
       saveUninitialized: false,
       store: storeInstance,
-      cookie: { maxAge: 1000 * 60 * 60 * 24 },
+      cookie: { 
+        maxAge: 1000 * 60 * 60 * 24,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      },
     });
   })()
 );
