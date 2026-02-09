@@ -16,11 +16,9 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
 
-// -------------------- MIDDLEWARE --------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// -------------------- CORS --------------------
 app.use(
   cors({
     origin: [
@@ -32,38 +30,33 @@ app.use(
   })
 );
 
-// -------------------- DATABASE --------------------
 const MONGO_URL =
   process.env.MongoURL || "mongodb://127.0.0.1:27017/trading";
 
 mongoose
   .connect(MONGO_URL)
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB Error:", err));
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB error:", err));
 
-// -------------------- SESSION STORE (SAFE) --------------------
 let store;
 
 try {
-  // v4 / v5 (ESM or CJS)
   if (MongoStore?.create) {
+    // v4 / v5
     store = MongoStore.create({ mongoUrl: MONGO_URL });
-  }
-  // default export (some builds)
-  else if (MongoStore?.default?.create) {
+  } else if (MongoStore?.default?.create) {
+    // ESM default export
     store = MongoStore.default.create({ mongoUrl: MONGO_URL });
-  }
-  // v3 legacy
-  else if (typeof MongoStore === "function") {
+  } else if (typeof MongoStore === "function") {
+    // v3 legacy
     store = MongoStore(session)({ url: MONGO_URL });
   } else {
-    console.warn("⚠️ Falling back to MemoryStore");
+    console.warn("⚠️ Using MemoryStore");
   }
 } catch (err) {
-  console.error("❌ MongoStore init failed, using MemoryStore:", err);
+  console.error("❌ MongoStore failed, using MemoryStore:", err);
 }
 
-// -------------------- SESSION --------------------
 app.use(
   session({
     name: "connect.sid",
@@ -74,13 +67,12 @@ app.use(
     cookie: {
       maxAge: 1000 * 60 * 60 * 24, // 1 day
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // 🔥 Render
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "lax",
     },
   })
 );
 
-// -------------------- AUTH MIDDLEWARE --------------------
 function requireAuth(req, res, next) {
   if (!req.session || !req.session.userId) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -88,20 +80,15 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// -------------------- ROUTES --------------------
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
 
-// ---------- SIGNUP ----------
 app.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
-
     if (!username || !email || !password) {
-      return res
-        .status(400)
-        .json({ message: "username, email, password required" });
+      return res.status(400).json({ message: "All fields required" });
     }
 
     const existing = await User.findOne({
@@ -117,7 +104,6 @@ app.post("/signup", async (req, res) => {
     await user.save();
 
     req.session.userId = user._id;
-
     res.status(201).json({ message: "Signup successful" });
   } catch (err) {
     console.error(err);
@@ -125,7 +111,6 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-// ---------- LOGIN ----------
 app.post("/login", async (req, res) => {
   try {
     const { identifier, password } = req.body;
@@ -151,7 +136,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// ---------- LOGOUT ----------
 app.post("/logout", (req, res) => {
   req.session.destroy(() => {
     res.clearCookie("connect.sid");
@@ -159,7 +143,6 @@ app.post("/logout", (req, res) => {
   });
 });
 
-// ---------- ME ----------
 app.get("/me", async (req, res) => {
   if (!req.session.userId) return res.json({ user: null });
   const user = await User.findById(req.session.userId).select(
@@ -168,7 +151,6 @@ app.get("/me", async (req, res) => {
   res.json({ user });
 });
 
-// ---------- PROTECTED ----------
 app.get("/positions", requireAuth, async (req, res) => {
   res.json(await Postions.find());
 });
@@ -177,7 +159,6 @@ app.get("/holdings", requireAuth, async (req, res) => {
   res.json(await Holdings.find());
 });
 
-// -------------------- SERVER --------------------
 const PORT = process.env.Port || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
