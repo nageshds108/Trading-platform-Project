@@ -95,7 +95,13 @@ app.post("/signup", async (req, res) => {
     await user.save();
 
     req.session.userId = user._id;
-    res.status(201).json({ message: "Signup successful" });
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+        return res.status(500).json({ message: "Signup failed" });
+      }
+      res.status(201).json({ message: "Signup successful" });
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Signup failed" });
@@ -114,7 +120,13 @@ app.post("/login", async (req, res) => {
     if (!ok) return res.status(400).json({ message: "Invalid credentials" });
 
     req.session.userId = user._id;
-    res.json({ message: "Login successful" });
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+        return res.status(500).json({ message: "Login failed" });
+      }
+      res.json({ message: "Login successful" });
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Login failed" });
