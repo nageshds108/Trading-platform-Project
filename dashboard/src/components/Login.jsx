@@ -7,21 +7,31 @@ const Login = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     if (!identifier || !password) return setError("All fields required");
 
+    setLoading(true);
     try {
-      await axios.post(
+      const resp = await axios.post(
         "https://trading-platform-project-backend.onrender.com/login",
         { identifier, password },
         { withCredentials: true }
       );
-      window.location.href = "/"; 
+      if (resp.status === 200) {
+        window.location.href = "/";
+      } else {
+        setError(resp.data?.message || `Login failed (${resp.status})`);
+      }
     } catch (err) {
-      setError(err.response?.data?.message || err.message);
+      const serverMsg = err.response?.data || err.response?.statusText;
+      const msg = serverMsg?.message || serverMsg || err.message;
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,7 +46,7 @@ const Login = () => {
 
         {error && <div className="auth-error">{error}</div>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={(e) => e.preventDefault()}>
           <label>Username or Email</label>
           <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} />
 
@@ -44,7 +54,9 @@ const Login = () => {
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
 
           <div className="auth-actions">
-            <button className="btn-primary" type="submit" style={{backgroundColor:'#ff5722'}}>Login</button>
+            <button className="btn-primary" type="submit" onClick={handleSubmit} disabled={loading} style={{backgroundColor:'#ff5722'}}>
+              {loading ? "Submitting..." : "Login"}
+            </button>
             <Link to="/signup" >Sign up</Link>
           </div>
         </form>
