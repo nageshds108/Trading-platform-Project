@@ -6,6 +6,7 @@ import API_BASE_URL from "../config";
 import Apps from "./Apps";
 import Funds from "./Funds";
 import Holdings from "./Holdings";
+
 import Orders from "./Orders";
 import Positions from "./Positions";
 import Summary from "./Summary";
@@ -16,41 +17,27 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let cancelled = false;
-
     const check = async () => {
       try {
-        const resp = await axios.get(`${API_BASE_URL}/me`, {
-          withCredentials: true,
-        });
-
-        if (!cancelled && !resp.data.user) {
-          navigate("/login", { replace: true });
+        const resp = await axios.get(`${API_BASE_URL}/me`, { withCredentials: true });
+        if (!resp.data.user) {
+          navigate("/login");
         }
       } catch (err) {
-        if (!cancelled) {
-          navigate("/login", { replace: true });
-        }
+        console.error("Auth check failed", err);
+        navigate("/login");
       }
     };
-
-    const timer = setTimeout(check, 150);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
+    check();
   }, [navigate]);
-
   return (
     <div className="dashboard-container">
       <GeneralContextProvider>
         <WatchList />
       </GeneralContextProvider>
-
       <div className="content">
         <Routes>
-          <Route path="/" element={<Summary />} />
+          <Route exact path="/" element={<Summary />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/holdings" element={<Holdings />} />
           <Route path="/positions" element={<Positions />} />
