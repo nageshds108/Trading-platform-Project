@@ -1,6 +1,7 @@
 # 📈 Trading Platform Frontend (React)
 
 A modern, responsive **trading platform frontend** built using **React** that simulates core features of an online stock trading application Zerodha .
+🔗 Live Demo: https://trading-platform-project.onrender.com
 
 ---
 
